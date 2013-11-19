@@ -1,0 +1,16 @@
+{% extends "layout.html" %}
+{% block content %}
+    <h3>Last crashes</h3>
+    <div class="row">
+        <div class="col-md-4">Name</div>
+        <div class="col-md-4">Count</div>
+        <div class="col-md-4">Last crash</div>
+    </div>
+    {% for trace in traces %}
+        <div class="row">
+            <div class="col-md-4"><a href="/crash/{{ trace.id }}">{{ trace.name }}</a></div>
+            <div class="col-md-4">{{ trace.count }}</div>
+            <div class="col-md-4">{{ trace.updated|datetime }}</div>
+        </div>
+    {% endfor %}
+{% endblock content %}

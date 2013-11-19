@@ -1,0 +1,26 @@
+#container {
+    width:90%;
+    max-width:1280px;
+    margin:auto;
+}
+.row {
+    padding:5px 0;
+}
+.row.odd {
+    background-color:#EDECEC;
+}
+.row.monospaced {
+    font-family:monospace;
+    white-space: nowrap;
+}
+.row.bordered {
+    border:1px solid #000;
+    border-top:none;
+}
+.row.header {
+    background-color:#C0C0C0;
+    font-weight:bold;
+    font-size:15px;
+    padding:8px 0;
+    border-top:1px solid #000;
+}

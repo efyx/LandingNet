@@ -1,0 +1,6 @@
+{% extends "layout.html" %}
+{% import "dump.html" as dumpMacro %}
+{% block content %}
+    <h2>Minidump: {{ dump.timestamp|datetime }} - {{ dump.name }} - {{ dump.data.crash_info.type }} @ {{ dump.data.crash_info.address }}</h2>
+    {{ dumpMacro.displayDump(dump.data, True, True) }}
+{% endblock content %}

@@ -1,0 +1,63 @@
+{% macro displayDump(dumpData, systemInfo=False, advanced=False) %}
+    {% if dumpData.sensitive.exploitability != "none" and dumpData.sensitive.exploitability != "ERROR: unable to analyze dump"%}
+        <div class="alert alert-warning">Exploitability : {{ dumpData.sensitive.exploitability }}</div>
+    {% endif %}
+    {% if systemInfo %}
+        <h3>System info</h3>
+        <div class="row header bordered">
+            <div class="col-md-3">Key</div>
+            <div class="col-md-6">Value</div>
+        </div>
+        {% for key, value in dumpData.system_info.iteritems() %}
+            <div class="row bordered">
+                <div class="col-md-3">{{ key }}</div>
+                <div class="col-md-6">{{ value }}</div>
+            </div>
+        {% endfor %}
+    {% endif %}
+    <h3>StackTrace</h3>
+    <div class="row header bordered">
+        <div class="col-md-1">Module</div>
+        <div class="col-md-6">Function</div>
+        <div class="col-md-5">File</div>
+    </div>
+    {% for frame in dumpData.crashing_thread.frames %}
+        <div class="row monospaced bordered {{ loop.cycle('odd', 'even') }}">
+            <div class="col-md-1">{{ frame.module }}</div>
+            <div class="col-md-6">{{ frame|normalizeFrame }}</div>
+            <div class="col-md-5">{{ frame.file|normalizeFilename }}</div>
+        </div>
+    {% endfor %}
+    {% if advanced %}
+        <h3>Loaded modules</h3>
+        <div class="row header bordered">
+            <div class="col-md-6">Module</div>
+            <div class="col-md-6">Version</div>
+        </div>
+        {% for module in dumpData.modules %}
+            <div class="row monospaced bordered {{ loop.cycle('odd', 'even') }}">
+                <div class="col-md-6">{{ module.filename }}</div>
+                <div class="col-md-6">{{ module.version }}</div>
+            </div>
+        {% endfor %}
+
+        <h3>Other threads</h3>
+        {% for thread in dumpData.threads %}
+            {% if loop.index - 1 != dumpData.crash_info.crashing_thread %}
+                <h4> Thread #{{ loop.index - 1 }}</h4>
+                <div class="row header bordered">
+                    <div class="col-md-1">Module</div>
+                    <div class="col-md-6">Function</div>
+                    <div class="col-md-5">File</div>
+                </div>
+                {% for frame in thread.frames %}
+                    <div class="row monospaced bordered {{ loop.cycle('odd', 'even') }}">
+                        <div class="col-md-1">{{ frame.module }}</div>
+                        <div class="col-md-6">{{ frame|normalizeFrame }}</div>
+                        <div class="col-md-5">{{ frame.file|normalizeFilename }}</div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+{% endmacro %}

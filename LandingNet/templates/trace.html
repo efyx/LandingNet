@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+{% block content %}
+    <h2>Crash : {{ trace.name }} - {{ trace.data.crash_info.type }} @ {{ trace.data.crash_info.address }}</h2>
+    {% import "dump.html" as dumpMacro %}
+    {{ dumpMacro.displayDump(trace.data) }}
+    <h3>History</h3>
+    <div class="row header bordered">
+        <div class="col-md-3">Date</div>
+        <div class="col-md-1">Product</div>
+        <div class="col-md-1">Version</div>
+        <div class="col-md-3">Build</div>
+        <div class="col-md-2">OS</div>
+        <div class="col-md-2">Arch</div>
+    </div>
+    {% for dump in dumps %}
+        <div class="row bordered {{ loop.cycle('odd', 'even') }}">
+            <div class="col-md-3"><a href="/minidump/{{ dump.id }}">{{ dump.timestamp|datetime }}</a></div>
+            <div class="col-md-1">{{ dump.product.name}}</div>
+            <div class="col-md-1">{{ dump.product.version }}</div>
+            <div class="col-md-3">{{ dump.build }}</div>
+            <div class="col-md-2">{{ dump.system_info.os }}</div>
+            <div class="col-md-2">{{ dump.system_info.cpu_arch }}</div>
+        </div>
+    {% endfor %}
+
+{% endblock content %}
