@@ -52,20 +52,50 @@ def uploadSymbols():
         raise InvalidUsage("Missing symbols file")
 
     file = request.files["symbols"]
+    ext = file.filename.rsplit(".", 1)[1]
 
-    if file is None or file.filename.rsplit(".", 1)[1] != "sym":
-        raise InvalidUsage("Wrong symbols format, .sym extension expected")
+    symFile = None
+    if ext == "zip":
+        import zipfile
+        import tempfile
+        zfile = zipfile.ZipFile(file)
+        zsymFile = None
 
-    tmp = file.readline()
+        # Find first .sym file in archive
+        for name in zfile.namelist():
+            (dirname, filename) = os.path.split(name)
+            zext = filename.rsplit(".", 1)[1]
+            if zext == "sym":
+                symFile = tempfile.TemporaryFile()
+                symFile.write(zfile.read(name))
+                symFile.seek(0)
+                break
+
+        if symFile is None:
+            raise InvalidUsage("No .sym file found in archive")
+    elif ext == "sym":
+        symFile = file
+    else:
+        raise InvalidUsage("Wrong symbols format, .sym or .zip extension expected")
+
+
+    # Debug symbols need to be stored with a specific directory structure :
+    # DEBUG_SYMBOLS_DIR/<exec name>/<hash>/<exec name>.sym
+
+    # The first line of the sym file give the needed information
+    # eg : MODULE Linux x86_64 6EDC6ACDB282125843FD59DA9C81BD830 test
+    #                          |> Hash                           |> Exec name
+    tmp = symFile.readline()
     tmp = tmp.split(" ")
-
-    file.seek(0)
+    symFile.seek(0)
 
     path = os.path.join(app.config["DEBUG_SYMBOLS_DIR"], tmp[4].strip(), tmp[3].strip())
-
     utils.mkdirs(path)
 
-    file.save(os.path.join(path, tmp[4].strip() + ".sym"))
+    with open(os.path.join(path, tmp[4].strip() + ".sym"), "w") as handle:
+        handle.write(symFile.read())
+
+    symFile.close()
 
     return render_template("upload_success.html")
 
