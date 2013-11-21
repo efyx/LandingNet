@@ -7,3 +7,4 @@ SQLALCHEMY_MIGRATE_REPO = os.path.join(basedir, "tools", "db_repository")
 MINIDUMP_UPDLOAD_DIR = "minidumps"
 DEBUG_SYMBOLS_DIR = "debug-symbols"
 STACKWALKER = "bin/stackwalker"
+MAX_CONTENT_LENGTH = 16 * 1024 * 1024
