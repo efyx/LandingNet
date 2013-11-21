@@ -35,7 +35,7 @@ def crash(cid):
     return render_template("crash.html", crash=crash, dumps=dumps)
     
 @app.route("/minidump/<int:did>")
-def trace(did):
+def minidump(did):
     from LandingNet.models import MiniDump
     import json
     dump = MiniDump.query.filter_by(id = did).first_or_404()
