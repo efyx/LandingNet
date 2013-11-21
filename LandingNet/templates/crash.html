@@ -1,8 +1,8 @@
 {% extends "layout.html" %}
 {% block content %}
-    <h2>Crash : {{ trace.name }} - {{ trace.data.crash_info.type }} @ {{ trace.data.crash_info.address }}</h2>
+    <h2>Crash : {{ crash.name }} - {{ crash.data.crash_info.type }} @ {{ crash.data.crash_info.address }}</h2>
     {% import "dump.html" as dumpMacro %}
-    {{ dumpMacro.displayDump(trace.data) }}
+    {{ dumpMacro.displayDump(crash.data) }}
     <h3>History</h3>
     <div class="row header bordered">
         <div class="col-md-3">Date</div>

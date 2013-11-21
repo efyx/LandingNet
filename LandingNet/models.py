@@ -11,8 +11,8 @@ class Product(db.Model):
     version = db.Column(db.String(16))
     UniqueConstraint('name', 'version', name='unique_product_version')
 
-class StackTrace(db.Model):
-    __tablename__ = "stacktrace"
+class Crashs(db.Model):
+    __tablename__ = "crashs"
 
     id = db.Column(db.Integer, primary_key=True)
     count = db.Column(db.Integer)
@@ -31,8 +31,8 @@ class MiniDump(db.Model):
     timestamp = db.Column(db.DateTime, default=datetime.now)
     product_id = db.Column(db.Integer, db.ForeignKey("product.id"))
     product = db.relationship(Product)
-    stacktrace_id = db.Column(db.Integer, db.ForeignKey("stacktrace.id"))
-    stacktrace  = db.relationship(StackTrace)
+    crash_id = db.Column(db.Integer, db.ForeignKey("crashs.id"))
+    crash = db.relationship(Crashs)
     signature = db.Column(db.String(40))
     build = db.Column(db.String(40))
     system_info = db.Column(MutableDict.as_mutable(HSTORE))

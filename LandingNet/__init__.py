@@ -16,23 +16,23 @@ logging.getLogger('werkzeug').setLevel(logging.DEBUG)
 @app.route("/")
 def index():
     from sqlalchemy import func
-    from LandingNet.models import StackTrace
+    from LandingNet.models import Crashs
     # TODO : Update this to query MiniDump and join with product and stacktrace
-    traces = StackTrace.query.order_by(StackTrace.updated.desc()).limit(10).all()
+    traces = Crashs.query.order_by(Crashs.updated.desc()).limit(10).all()
     return render_template("index.html", traces=traces)
 
 @app.route("/crash/<int:cid>")
 def crash(cid):
-    from LandingNet.models import StackTrace, MiniDump
+    from LandingNet.models import Crashs, MiniDump
     import json
-    trace = StackTrace.query.filter_by(id = cid).first_or_404()
-    dumps = MiniDump.query.filter_by(stacktrace_id = trace.id).order_by(MiniDump.timestamp.desc()).all()
+    crash = Crashs.query.filter_by(id = cid).first_or_404()
+    dumps = MiniDump.query.filter_by(crash_id = crash.id).order_by(MiniDump.timestamp.desc()).all()
     if dumps is None:
         raise InvalidUsage("No dumps for trace " + cid)
 
-    trace.data = json.loads(dumps[0].data)
+    crash.data = json.loads(dumps[0].data)
 
-    return render_template("trace.html", trace=trace, dumps=dumps)
+    return render_template("crash.html", crash=crash, dumps=dumps)
     
 @app.route("/minidump/<int:did>")
 def trace(did):
@@ -108,13 +108,13 @@ def submit():
 
     ret = utils.processMinidump(filename)
 
-    st = models.StackTrace.query.filter_by(signature = ret["signature"]).first()
-    if st is None:
-        st = models.StackTrace()
-        st.count = 0
-        st.name = ret["name"]
-        st.signature = ret["signature"]
-        db.session.add(st)
+    crash = models.Crashs.query.filter_by(signature = ret["signature"]).first()
+    if crash is None:
+        crash = models.Crashs()
+        crash.count = 0
+        crash.name = ret["name"]
+        crash.signature = ret["signature"]
+        db.session.add(crash)
         db.session.commit()
 
     md = models.MiniDump()
@@ -127,7 +127,7 @@ def submit():
     md.system_info = ret["systemInfo"]
     md.name = ret["name"]
 
-    st.count = st.count + 1
+    crash.count = crash.count + 1
 
     db.session.add(md)
     db.session.commit()
