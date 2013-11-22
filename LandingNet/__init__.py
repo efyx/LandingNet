@@ -148,7 +148,7 @@ def submit():
         db.session.commit()
 
     md = models.MiniDump()
-    md.stacktrace_id = crash.id
+    md.crash_id = crash.id
     md.product_id = product.id
     md.signature = ret["signature"]
     md.minidump = filename
