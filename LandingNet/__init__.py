@@ -28,7 +28,7 @@ def crash(cid):
     crash = Crashs.query.filter_by(id = cid).first_or_404()
     dumps = MiniDump.query.filter_by(crash_id = crash.id).order_by(MiniDump.timestamp.desc()).all()
     if len(dumps) == 0:
-        raise InvalidUsage("No dumps for trace " + cid)
+        raise InvalidUsage("No dumps for trace " + str(cid))
 
     crash.data = json.loads(dumps[0].data)
 
