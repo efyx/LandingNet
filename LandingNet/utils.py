@@ -20,31 +20,17 @@ def processMinidump(f):
 
     pdata = json.loads(data)
 
-    tmp = pdata["crashing_thread"]["frames"][0]
-    lastCall = ""
-
-    if "function" in tmp:
-        lastCall += tmp["function"] 
-    else:
-        lastCall += "N/A"
-
-    if "line" in tmp:
-        lastCall += ":" + str(tmp["line"])
-    elif "function_offset" in tmp:
-        lastCall += ":" + str(tmp["function_offset"])
-    elif "module_offset" in tmp:
-        lastCall += ":" + str(tmp["module_offset"])
-        
     signature = ""
     separator = ""
+    lastCall = None
 
     i = 0;
     for frame in pdata["crashing_thread"]["frames"]:
         if i > 10:
             break;
 
-        fn = "N/A"
-        line = "N/A" 
+        fn = None
+        line = None
         if "function" in frame:
             fn = frame["function"]
 
@@ -53,11 +39,22 @@ def processMinidump(f):
         elif "module_offset" in frame:
             line = str(frame["module_offset"])
 
+        if lastCall is None and fn is not None and line is not None:
+            lastCall = "%s:%s" % (fn, line)
+
+        if fn is None:
+            fn = "N/A"
+        if line is None:
+            line = "N/A"
+
         signature += separator + fn + ":" + line 
 
         separator = "-"
 
         i = i + 1
+
+    if lastCall is None:
+        lastCall = "N/A"
 
     # Since system info is used to be inserted into database
     # cast int to string
