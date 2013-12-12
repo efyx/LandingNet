@@ -87,7 +87,7 @@ def uploadSymbols():
 
 
     # Debug symbols need to be stored with a specific directory structure :
-    # DEBUG_SYMBOLS_DIR/<exec name>/<hash>/<exec name>.sym
+    # BREAKPAD_DEBUG_SYMBOLS_DIR/<exec name>/<hash>/<exec name>.sym
 
     # The first line of the sym file give the needed information
     # eg : MODULE Linux x86_64 6EDC6ACDB282125843FD59DA9C81BD830 test

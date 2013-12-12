@@ -16,7 +16,7 @@ def processMinidump(f):
     data = subprocess.check_output([
             app.config["STACKWALKER"], 
             os.path.join(app.config["MINIDUMP_UPDLOAD_DIR"], f), 
-            app.config["DEBUG_SYMBOLS_DIR"]])
+            app.config["BREAKPAD_DEBUG_SYMBOLS_DIR"]])
 
     pdata = json.loads(data)
 
