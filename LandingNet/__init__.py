@@ -50,11 +50,6 @@ def uploadSymbols():
     if "symbols" not in request.files:
         raise InvalidUsage("Missing symbols file")
 
-    fields = ["build", "arch", "system"]
-    for field in fields:
-        if field not in request.form:
-            raise InvalidUsage("Missing field " + field)
-
     file = request.files["symbols"]
     ext = file.filename.rsplit(".", 1)[1]
 
@@ -106,6 +101,11 @@ def uploadSymbols():
     symFile.close()
 
     if debugFile is not None:
+        fields = ["build", "arch", "system"]
+        for field in fields:
+            if field not in request.form:
+                raise InvalidUsage("Missing field " + field)
+
         name = "%s_%s_%s_%s.debug" % (execName, request.form["system"], request.form["arch"], request.form["build"])
         with open(os.path.join(app.config["DEBUG_SYMBOLS_DIR"], name), "w") as handle:
             handle.write(debugFile.read())
