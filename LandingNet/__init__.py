@@ -5,7 +5,6 @@ from LandingNet.HttpException import InvalidUsage
 
 app = Flask(__name__)
 app.config.from_object('LandingNet.config')
-app.config['MAX_CONTENT_LENGTH'] = 1024 * 1000000
 db = SQLAlchemy(app)
 
 import logging
@@ -51,25 +50,33 @@ def uploadSymbols():
     if "symbols" not in request.files:
         raise InvalidUsage("Missing symbols file")
 
+    fields = ["revision", "arch", "system"]
+    for field in fields:
+        if field not in request.form:
+            raise InvalidUsage("Missing field " + field)
+
     file = request.files["symbols"]
     ext = file.filename.rsplit(".", 1)[1]
 
     symFile = None
+    debugFile = None
     if ext == "zip":
         import zipfile
         import tempfile
         zfile = zipfile.ZipFile(file)
         zsymFile = None
 
-        # Find first .sym file in archive
         for name in zfile.namelist():
             (dirname, filename) = os.path.split(name)
             zext = filename.rsplit(".", 1)[1]
-            if zext == "sym":
-                symFile = tempfile.TemporaryFile()
+            if zext == "sym" and symFile is None:
+                symFile = tempfile.TemporaryFile(dir="/home/efyx/dev/")
                 symFile.write(zfile.read(name))
                 symFile.seek(0)
-                break
+            elif zext == "debug" and debugFile is None:
+                debugFile = tempfile.TemporaryFile(dir="/home/efyx/dev/")
+                debugFile.write(zfile.read(name))
+                debugFile.seek(0)
 
         if symFile is None:
             raise InvalidUsage("No .sym file found in archive")
@@ -88,8 +95,9 @@ def uploadSymbols():
     tmp = symFile.readline()
     tmp = tmp.split(" ")
     symFile.seek(0)
+    execName = tmp[4].strip()
 
-    path = os.path.join(app.config["DEBUG_SYMBOLS_DIR"], tmp[4].strip(), tmp[3].strip())
+    path = os.path.join(app.config["BREAKPAD_DEBUG_SYMBOLS_DIR"], execName, tmp[3].strip())
     utils.mkdirs(path)
 
     with open(os.path.join(path, tmp[4].strip() + ".sym"), "w") as handle:
@@ -97,6 +105,13 @@ def uploadSymbols():
 
     symFile.close()
 
+    if debugFile is not None:
+        name = "%s_%s_%s_%s.debug" % (execName, request.form["system"], request.form["arch"], request.form["revision"])
+        with open(os.path.join(app.config["DEBUG_SYMBOLS_DIR"], name), "w") as handle:
+            handle.write(debugFile.read())
+
+        debugFile.close()
+            
     return render_template("upload_success.html")
 
 @app.route("/submit", methods=["POST"])
