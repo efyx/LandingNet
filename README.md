@@ -105,7 +105,9 @@ curl -F symbols=@demo/demo.sym http://localhost:5000/upload_symbols
 **Endpoint arguments :**
 ```
 /upload_symbols
-    symbols  : Can be a breakpad .sym file or a zip file containing breakpad .sym file and (optionally) debug symbols for your application (the file must end with .debug)
+    symbols  : Can be a breakpad .sym file or a zip file containing breakpad .sym file 
+               and _optionally_ debug symbols for your application 
+               (the file must end with .debug)
     build : Build number (Can be any string up to 40 character)
     arch : The architecture of the uploaded symbols
     system : The system of the uploaded symbols
