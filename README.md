@@ -105,8 +105,13 @@ curl -F symbols=@demo/demo.sym http://localhost:5000/upload_symbols
 **Endpoint arguments :**
 ```
 /upload_symbols
-    symbols  : The file containing debug symbols
+    symbols  : Can be a breakpad .sym file or a zip file containing breakpad .sym file and (optionally) debug symbols for your application (the file must end with .debug)
+    build : Build number (Can be any string up to 40 character)
+    arch : The architecture of the uploaded symbols
+    system : The system of the uploaded symbols
 ```
+
+*The fields build, arch and system are used to store the debug symbols with a unique name debug-symbols/<exec name>_<system>_<arch>_<build>.debug so later you can retreive it easily if needed*
 
 ### Minidump
 Minidump are files uploaded when a crash occur.
