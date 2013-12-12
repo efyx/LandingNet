@@ -70,11 +70,11 @@ def uploadSymbols():
             (dirname, filename) = os.path.split(name)
             zext = filename.rsplit(".", 1)[1]
             if zext == "sym" and symFile is None:
-                symFile = tempfile.TemporaryFile(dir="/home/efyx/dev/")
+                symFile = tempfile.TemporaryFile()
                 symFile.write(zfile.read(name))
                 symFile.seek(0)
             elif zext == "debug" and debugFile is None:
-                debugFile = tempfile.TemporaryFile(dir="/home/efyx/dev/")
+                debugFile = tempfile.TemporaryFile()
                 debugFile.write(zfile.read(name))
                 debugFile.seek(0)
 
