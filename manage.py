@@ -1,6 +1,6 @@
 from flask.ext.script import Manager, prompt
 from flask.ext.migrate import Migrate, MigrateCommand
-from LandingNet import app, db
+from LandingNet import app, db 
 from LandingNet import models
 
 migrate = Migrate(app, db)
@@ -29,6 +29,30 @@ def add_product(name, version="0.1"):
     db.session.commit()
 
     print "Product %s, version %s added" % (name, version)
+
+@manager.command
+def refresh_dump(did):
+    from LandingNet import utils
+    from LandingNet import config 
+    from pprint import pprint
+    import os
+
+
+    dump = models.MiniDump.query.filter_by(id = did).first()
+    if dump is None:
+        print "Dump %d not found" % (did)
+
+    ret = utils.processMinidump(dump.minidump)
+
+    dump.signature = ret["signature"]
+    dump.data = ret["data"]
+    dump.name = ret["name"]
+
+    print ret["data"]
+
+    db.session.add(dump)
+    db.session.commit()
+
 
 @manager.command
 def setup_demo():
