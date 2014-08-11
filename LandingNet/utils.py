@@ -54,7 +54,7 @@ def processMinidump(f):
 
             i = i + 1
     else:
-        lastCall = "No crashing thread"
+        lastCall = "N/A : No crashing thread"
 
     if lastCall is None:
         lastCall = "N/A"
