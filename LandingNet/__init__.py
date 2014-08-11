@@ -200,7 +200,14 @@ def normalizeFilename(value):
 
 @app.template_filter("normalizeFrame")
 def normalizeFrame(frame):
+    ret = ""
+
     if frame.get("function"):
-        return frame["function"] + ":" + str(frame["line"])
+        ret = frame["function"]
     else:
-        return "N/A"
+        ret = "N/A"
+
+    if frame.get("line"):
+        ret += ":" + str(frame["line"])
+
+    return ret
