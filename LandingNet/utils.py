@@ -20,38 +20,41 @@ def processMinidump(f):
 
     pdata = json.loads(data)
 
-    signature = ""
+    signature = "No crashing thread"
     separator = ""
     lastCall = None
 
     i = 0;
-    for frame in pdata["crashing_thread"]["frames"]:
-        if i > 10:
-            break;
+    if pdata.get("crashing_thread"):
+        for frame in pdata["crashing_thread"]["frames"]:
+            if i > 10:
+                break;
 
-        fn = None
-        line = None
-        if "function" in frame:
-            fn = frame["function"]
+            fn = None
+            line = None
+            if "function" in frame:
+                fn = frame["function"]
 
-        if "line" in frame:
-            line = str(frame["line"])
-        elif "module_offset" in frame:
-            line = str(frame["module_offset"])
+            if "line" in frame:
+                line = str(frame["line"])
+            elif "module_offset" in frame:
+                line = str(frame["module_offset"])
 
-        if lastCall is None and fn is not None and line is not None:
-            lastCall = "%s:%s" % (fn, line)
+            if lastCall is None and fn is not None and line is not None:
+                lastCall = "%s:%s" % (fn, line)
 
-        if fn is None:
-            fn = "N/A"
-        if line is None:
-            line = "N/A"
+            if fn is None:
+                fn = "N/A"
+            if line is None:
+                line = "N/A"
 
-        signature += separator + fn + ":" + line 
+            signature += separator + fn + ":" + line 
 
-        separator = "-"
+            separator = "-"
 
-        i = i + 1
+            i = i + 1
+    else:
+        lastCall = "No crashing thread"
 
     if lastCall is None:
         lastCall = "N/A"
