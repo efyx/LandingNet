@@ -21,13 +21,17 @@
         <div class="col-md-6">Function</div>
         <div class="col-md-5">File</div>
     </div>
-    {% for frame in dumpData.crashing_thread.frames %}
-        <div class="row monospaced bordered {{ loop.cycle('odd', 'even') }}">
-            <div class="col-md-1">{{ frame.module }}</div>
-            <div class="col-md-6">{{ frame|normalizeFrame }}</div>
-            <div class="col-md-5">{{ frame.file|normalizeFilename }}</div>
-        </div>
-    {% endfor %}
+    {% if dumpData.crashing_thread is defined %}
+        {% for frame in dumpData.crashing_thread.frames %}
+            <div class="row monospaced bordered {{ loop.cycle('odd', 'even') }}">
+                <div class="col-md-1">{{ frame.module }}</div>
+                <div class="col-md-6">{{ frame|normalizeFrame }}</div>
+                <div class="col-md-5">{{ frame.file|normalizeFilename }}</div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="alert alert-warning">No crashing thread</div>
+    {% endif %}
     {% if advanced %}
         <h3>Loaded modules</h3>
         <div class="row header bordered">
